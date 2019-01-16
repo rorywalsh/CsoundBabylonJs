@@ -3,7 +3,7 @@
 ksmps = 64
 0dbfs = 1
 
-instr 2
+instr 1
     aDeclick linseg 0, .1, 1, 10, 1
     ; creates a unique channel with same 
     ; name as game object
