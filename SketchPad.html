@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Csound</title>
+ <style type="text/css">
+    html,
+    body {
+      font-family: Monospace;
+      color: #008d47;
+      background-color: #1a1a1a;
+    }
+    #console {
+      font-family: Monospace;
+      color: #4c88c0;
+      background-color: #424242;
+      font-size: 16px;
+      width: 805px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-style: solid;
+      padding: 20px 0px;
+    }
+    #mess {
+      font-family: Monospace;
+      color: #4c88c0;
+      background-color: #1a1a1a;
+    }
+  </style>
+ <script type="text/javascript" src="csound/csound.js"></script>
+ <script type="text/javascript">
+ // called by csound.js
+ function moduleDidLoad() {
+  csound.PlayCsd("instruments.csd");
+ }
+ function attachListeners() {}
+ function handleMessage(message) {
+   var messField = document.getElementById("mess")
+   messField.innerText += message;
+   scrollTo(0, messField.scrollHeight);
+ }
+ </script>
+</head>
+<body>
+  <div id="console" ></div>
+  <div id="mess">
+</body>
+</html>
+
