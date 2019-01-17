@@ -80,13 +80,13 @@
                 })
             });
 
-// Game/Render loop
+            // Game/Render loop
             scene.onBeforeRenderObservable.add(()=>{
                 if(csoundLoaded == true)
                 {
                     for ( var i = 0 ; i < rows ; i++)
                     {
-                        csound.requestControlChannel("box"+(i).toString(), function() 
+                        csound.requestControlChannel("box"+parseInt(i), function() 
                         {
                             value = csound.getControlChannel("box"+parseInt(i));    
                             console.log(value);                  
