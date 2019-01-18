@@ -80,16 +80,20 @@
                 })
             });
 
-            // Game/Render loop
+// Game/Render loop
             scene.onBeforeRenderObservable.add(()=>{
                 if(csoundLoaded == true)
                 {
-                    for ( var i = 0 ; i < rows ; i++)
+                    for (let i = 0 ; i < rows ; i++)
                     {
-                        csound.requestControlChannel("box"+parseInt(i), function() 
+                        let name = "box"+parseInt(i);
+                        
+                        csound.requestControlChannel("box"+(i).toString(), function() 
                         {
-                            value = csound.getControlChannel("box"+parseInt(i));    
-                            console.log(value);                  
+                            //console.log(name)
+                        
+                            let value = csound.getControlChannel(name); 
+                            //console.log(csound);
                             boxes[i].position.y = 2*value*.6-10;
                             for(var row = 0 ; row < rows ; row++)
                             {
