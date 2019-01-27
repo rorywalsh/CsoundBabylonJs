@@ -20,9 +20,9 @@
                 touch-action: none;
             }
         </style>
-        <script src="https://cdn.babylonjs.com/babylon.js"></script>
-        <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-        <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+        <script src="js/babylon.js"></script>
+        <script src="js/babylonjs.loaders.min.js"></script>
+        <script src="js/pep.js"></script>
     </head>
 
    <body>
@@ -32,6 +32,11 @@
     <script>
         // load sound engine and compiles script
         var csoundLoaded = false;
+        function moduleDidLoad() {
+            csound.PlayCsd("Movement.csd");
+            csoundLoaded = true;
+        }
+
 
 
 
@@ -84,21 +89,6 @@
             scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {								
                 inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
             }));
-
-            
-            // Setup sound engine and load sound script
-            CsoundObj.importScripts("./csound/").then(() => {
-                fetch("Movement.csd").then((response) => {
-                response.text().then((csd) => {
-                    csound = new CsoundObj();
-                    csound.compileCSD(csd);
-                    csound.start();
-                    //start any always sounding instruments....
-                    csound.readScore('i1 0 z 0 "' + box1.name + '" 200');
-                    csoundLoaded = true;
-                })
-                })
-            });
 
             //function to send distances to audio engine
             function setDistanceFromAudioListener(source)

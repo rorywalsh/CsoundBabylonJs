@@ -20,7 +20,6 @@
                 touch-action: none;
             }
         </style>
-        <script src="ExplosionSounds.js"></script>
         <script src="https://cdn.babylonjs.com/babylon.js"></script>
         <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
         <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
@@ -30,11 +29,15 @@
 
     <canvas id="renderCanvas" touch-action="none"></canvas> //touch-action="none" for best results from PEP
 
-    <script src="csound/CsoundObj.js"></script>
+    <script src="csound/csound.js"></script>
     <script>
         // load sound engine and compiles script
         var csoundLoaded = false;
-        var csound;
+        function moduleDidLoad() {
+            csound.CopyUrlToLocal("audio/explosion01.wav", "explosion01.wav", function(){console.log("Loading...");});
+            csound.PlayCsd("Explosion.csd");
+            csoundLoaded = true;
+        }
 
         var canvas = document.getElementById("renderCanvas"); // Get the canvas element 
         var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
@@ -88,18 +91,6 @@
                 inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
             }));
 
-            // Setup sound engine and load sound script
-            CsoundObj.importScripts("./csound/").then(() => {
-                fetch("Explosion.csd").then((response) => {
-                response.text().then((csd) => {
-                    csound = new CsoundObj();
-                    csound.compileCSD(csd);
-                    csound.start();
-                    csoundLoaded = true;
-                })
-                })
-            });
-
 
             scene.onKeyboardObservable.add((kbInfo) => {
                 switch (kbInfo.type) 
@@ -113,7 +104,7 @@
                                 });
                                 set.start();
                             });
-                            csound.readScore("i1 0 2");
+                            csound.ReadScore("i2 0 10");
                         }
                 }
             });
