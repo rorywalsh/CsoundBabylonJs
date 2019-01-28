@@ -37,7 +37,7 @@
         function moduleDidLoad() {          
             audioEngine = new AudioEngine("audioEngine.csd");
             audioEngine.setAudioDirectory("/audio");
-            audioEngine.addFiles(new Array('1.ogg', '2.wav', '3.wav')); 
+            audioEngine.addFiles(new Array('1.wav', '2.wav', '3.wav')); 
             audioEngine.start();
         }
 
@@ -100,8 +100,7 @@
                     case BABYLON.KeyboardEventTypes.KEYDOWN:
                         if(kbInfo.event.key == 'b')
                         {
-                            //csound.ReadScore('i "PLAY_ONCE" 0 2');
-                            audioEngine.playOnce('1.ogg');
+                            audioEngine.playOnce('1.wav');
                         }
                 }
             });
