@@ -40,6 +40,13 @@ function AudioEngine (filename) {
         }
     }
 
+    this.filterSource(source, cutoff)
+    {
+        if(this.isLoaded == true){
+            csound.SetChannel(source.name, cutoff);
+        }
+    }
+
     this.isLoaded = true;
 }
 

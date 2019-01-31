@@ -32,11 +32,16 @@
         // load sound engine and compiles script
         var csoundLoaded = false;
         function moduleDidLoad() {
-            //csound.CopyUrlToLocal("explosion01.wav", "explosion01.wav", function(){console.log("Loading...");});
-            csound.PlayCsd("Explosion.csd");
+            csound.CopyUrlToLocal("audio/120Loop.wav", "120Loop.wav", function(){console.log("Loading...");});
+            csound.PlayCsd("Diffraction.csd");
+            csound.SetChannel(22050, "cutoff");
             csoundLoaded = true;
+            setTimeout(function(){ createGame() }, 2000);
         }
 
+//wrap game code so that is doesn't load until everything else has. 
+var createGame = function()
+{
         var canvas = document.getElementById("renderCanvas"); // Get the canvas element 
         var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
 
@@ -50,9 +55,12 @@
             var light0 = new BABYLON.DirectionalLight("Omni", new BABYLON.Vector3(-2, -5, 2), scene);
 
             // Need a free camera for collisions
-            var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(0, 2, -80), scene);
+            var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(10, 2, -80), scene);
             camera.attachControl(canvas, true);
-            camera.speed = 1;
+            camera.keysUp.push(87);    //W
+            camera.keysDown.push(83)   //D
+            camera.keysLeft.push(65);  //A
+            camera.keysRight.push(68); //S            camera.speed = 1;
             //Ground
             var ground = BABYLON.Mesh.CreatePlane("ground", 1500.0, scene);
             ground.material = new BABYLON.StandardMaterial("groundMat", scene);
@@ -65,12 +73,12 @@
             //Simple box
             var source = new BABYLON.Mesh.CreateBox("Source", 2, scene);
             source.position = new BABYLON.Vector3(0, 1, 0);
-
-            
-            var barrier = new BABYLON.MeshBuilder.CreateBox("box", {height: 5, width: 5, depth: 0.5}, scene);
-            barrier.position = new BABYLON.Vector3(-10, 1, -40);
-
-
+            csound.ReadScore('i"PLAY_SOUND" 0 -1 "120Loop.wav" '+'"'+source.name+'"');  
+            // Barrier. Longest dimension is 5m. If speed of sound in the world is 344 ms, then
+            // such a barrier, when placed between the source and the listener should filter out sounds
+            // above 344/5=68.8Hz
+            var barrier = new BABYLON.MeshBuilder.CreateBox("Barrier", {height: 5, width: 5, depth: 0.5}, scene);
+            barrier.position = new BABYLON.Vector3(-2, 1, -40);
             
 
             //Set gravity for the scene (G force like, on Y-axis)
@@ -99,17 +107,23 @@
                 inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
             }));
 
+            
 
-            scene.onKeyboardObservable.add((kbInfo) => {
-                switch (kbInfo.type) 
-                {
-                    case BABYLON.KeyboardEventTypes.KEYDOWN:
-                        if(kbInfo.event.key == 'b')
-                        {
-                            
-                        }
+            // Game/Render loop
+            scene.onBeforeRenderObservable.add(()=>{
+                //console.log(BABYLON.Vector3.GetAngleBetweenVectors(camera.position, )            
+                var ray = BABYLON.Ray.CreateNewFromTo(camera.position, source.position);
+                BABYLON.RayHelper.CreateAndShow(ray, scene, new BABYLON.Color3(1, 0, 0));
+                var hit = scene.pickWithRay(ray);
+
+                if (hit.pickedMesh.id == 'Barrier'){
+
+                    csound.SetChannel(source.name, 100);
                 }
-            });
+                else
+                    csound.SetChannel(source.name, 22050);
+
+            })
 
             return scene;
         }
@@ -126,6 +140,7 @@
         window.addEventListener("resize", function () { 
                 engine.resize();
         });
+}
     </script>
 
    </body>
