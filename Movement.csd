@@ -23,7 +23,6 @@ instr 1
         aOuts = a1*(1/kDistance)
     endif
 
-   
     outs aOut*aDeclick, aOut*aDeclick
 endin
 </CsInstruments>
