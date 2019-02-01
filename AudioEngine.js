@@ -36,14 +36,14 @@ function AudioEngine (filename) {
     this.setSourceAmplitude = function(source, listener, scale = 1){
         if(this.isLoaded == true){
             const distance = BABYLON.Vector3.Distance(listener.position, source.position)
-            csound.SetChannel(source.name, distance*scale);
+            csound.SetChannel(source.name+'distance', distance*scale);
         }
     }
 
-    this.filterSource(source, cutoff)
+    this.setSourceCufOff = function(source, cutoff)
     {
         if(this.isLoaded == true){
-            csound.SetChannel(source.name, cutoff);
+            csound.SetChannel(source.name+'cutoff', cutoff);
         }
     }
 

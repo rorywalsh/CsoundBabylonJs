@@ -115,7 +115,8 @@ var createGame = function()
             
             // sets the distance from a source, 'box1', depending on 
             // to position of the listener, 'camera'
-            audioEngine.setSourceAmplitude(box1, camera, .1);
+            audioEngine.setSourceAmplitude(box1, camera, 1);
+            //audioEngine.setSourceCufOff(box1, 100);
 
         })
         return scene;

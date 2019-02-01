@@ -108,7 +108,7 @@ var createGame = function()
             }));
 
             
-
+            var cutoff = 344 / ( barrier.width > barrier.height ? barrier.width : barrier.height)
             // Game/Render loop
             scene.onBeforeRenderObservable.add(()=>{
                 //console.log(BABYLON.Vector3.GetAngleBetweenVectors(camera.position, )            
@@ -117,12 +117,10 @@ var createGame = function()
                 var hit = scene.pickWithRay(ray);
 
                 if (hit.pickedMesh.id == 'Barrier'){
-
-                    csound.SetChannel(source.name, 100);
+                    csound.SetChannel(source.name, cutoff);
                 }
                 else
                     csound.SetChannel(source.name, 22050);
-
             })
 
             return scene;
