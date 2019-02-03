@@ -32,7 +32,7 @@
         // load sound engine and compiles script
         var csoundLoaded = false;
         function moduleDidLoad() {
-            csound.CopyUrlToLocal("audio/120Loop.wav", "120Loop.wav", function(){console.log("Loading...");});
+            csound.CopyUrlToLocal("audio/pianoMood.wav", "pianoMood.wav", function(){console.log("Loading...");});
             csound.PlayCsd("Diffraction.csd");
             csound.SetChannel(22050, "cutoff");
             csoundLoaded = true;
@@ -73,7 +73,8 @@ var createGame = function()
             //Simple box
             var source = new BABYLON.Mesh.CreateBox("Source", 2, scene);
             source.position = new BABYLON.Vector3(0, 1, 0);
-            csound.ReadScore('i"PLAY_SOUND" 0 -1 "120Loop.wav" '+'"'+source.name+'"');  
+            csound.ReadScore('i"PLAY_SOUND" 0 -1 "pianoMood.wav" '+'"'+source.name+'"');  
+            csound.SetChannel(source.name, 22050);
             // Barrier. Longest dimension is 5m. If speed of sound in the world is 344 ms, then
             // such a barrier, when placed between the source and the listener should filter out sounds
             // above 344/5=68.8Hz
@@ -108,7 +109,7 @@ var createGame = function()
             }));
 
             
-            var cutoff = 344 / ( barrier.width > barrier.height ? barrier.width : barrier.height)
+            var cutoff = 344 / 5;
             // Game/Render loop
             scene.onBeforeRenderObservable.add(()=>{
                 //console.log(BABYLON.Vector3.GetAngleBetweenVectors(camera.position, )            
