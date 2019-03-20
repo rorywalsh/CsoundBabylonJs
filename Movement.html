@@ -28,18 +28,22 @@
    <body>
     <canvas id="renderCanvas" touch-action="none"></canvas> //touch-action="none" for best results from PEP
     
-    <script src="csound/CsoundObj.js"></script>
+    <script src="csound/csound.js"></script>
     <script>
         // load sound engine and compiles script
         var csoundLoaded = false;
         function moduleDidLoad() {
             csound.PlayCsd("Movement.csd");
             csoundLoaded = true;
+            setTimeout(function(){
+                createGame();
+            }, 2000);
         }
 
 
 
-
+var createGame = function()
+{
         var canvas = document.getElementById("renderCanvas"); // Get the canvas element 
 
         var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
@@ -66,6 +70,7 @@
             //Simple box
             var box1 = new BABYLON.Mesh.CreateBox("Box1", 2, scene);
             box1.position = new BABYLON.Vector3(20, -9, -10);
+            csound.ReadScore('i1 0 -1 0 "'+box1.name+'"');
 
 
             //Set gravity for the scene (G force like, on Y-axis)
@@ -96,7 +101,7 @@
                 if(csoundLoaded == true)
                 {
                     const distance = BABYLON.Vector3.Distance(camera.position, source.position)
-                    csound.setControlChannel(source.name, distance);
+                    csound.SetChannel(source.name, distance);
                 }
             }
         
@@ -135,7 +140,8 @@
         window.addEventListener("resize", function () { 
                 engine.resize();
         });
-
+}
+    
     </script>
 
    </body>

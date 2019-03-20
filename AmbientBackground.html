@@ -20,24 +20,25 @@
                 touch-action: none;
             }
         </style>
-        <script src="js/babylon.js"></script>
-        <script src="js/babylonjs.loaders.min.js"></script>
-        <script src="js/pep.js"></script>
+        <script src="../js/babylon.js"></script>
+        <script src="../js/babylonjs.loaders.min.js"></script>
+        <script src="../js/pep.js"></script>
+        
     </head>
    <body>
 
     <canvas id="renderCanvas" touch-action="none"></canvas> //touch-action="none" for best results from PEP
-    <script src="csound/csound.js"></script>
+    <script src="../csound/csound.js"></script>
     <script>
-        // load sound engine and compiles script
-        var csoundLoaded = false;
-        function moduleDidLoad() {
-            csound.CopyUrlToLocal("audio/pianoMood.wav", "pianoMood.wav", function(){console.log("Loading...");});
-            csound.PlayCsd("Diffraction.csd");
-            csound.SetChannel(22050, "cutoff");
-            csoundLoaded = true;
-            setTimeout(function(){ createGame() }, 2000);
-        }
+        
+var lettuce;
+function moduleDidLoad() {        
+    csound.PlayCsd('Wind.csd');
+
+    setTimeout(function(){
+        createGame();
+    }, 1000);
+}
 
 //wrap game code so that is doesn't load until everything else has. 
 var createGame = function()
@@ -73,14 +74,7 @@ var createGame = function()
             //Simple box
             var source = new BABYLON.Mesh.CreateBox("Source", 2, scene);
             source.position = new BABYLON.Vector3(0, 1, 0);
-            csound.ReadScore('i"PLAY_SOUND" 0 -1 "pianoMood.wav" '+'"'+source.name+'"');  
-            csound.SetChannel(source.name, 22050);
-            // Barrier. Longest dimension is 5m. If speed of sound in the world is 344 ms, then
-            // such a barrier, when placed between the source and the listener should filter out sounds
-            // above 344/5=68.8Hz
-            var barrier = new BABYLON.MeshBuilder.CreateBox("Barrier", {height: 5, width: 5, depth: 0.5}, scene);
-            barrier.position = new BABYLON.Vector3(-2, 1, -40);
-            
+            source.checkCollisions = true;
 
             //Set gravity for the scene (G force like, on Y-axis)
             scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
@@ -108,20 +102,47 @@ var createGame = function()
                 inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
             }));
 
-            
-            var cutoff = 344 / 5;
-            // Game/Render loop
-            scene.onBeforeRenderObservable.add(()=>{
-                //console.log(BABYLON.Vector3.GetAngleBetweenVectors(camera.position, )            
-                var ray = BABYLON.Ray.CreateNewFromTo(camera.position, source.position);
-                BABYLON.RayHelper.CreateAndShow(ray, scene, new BABYLON.Color3(1, 0, 0));
-                var hit = scene.pickWithRay(ray);
+            window.addEventListener("keydown", onKeyDown, false);
+   
+            function onKeyDown(event) {
+                    switch (event.keyCode) {
+                        case 32:
+                            cameraJump();
+                        break;
+                    }
+            }   
+	
+	        var cameraJump = function() {
+		    var cam = scene.cameras[0];
 
-                if (hit.pickedMesh.id == 'Barrier'){
-                    csound.SetChannel(source.name, cutoff);
-                }
-                else
-                    csound.SetChannel(source.name, 22050);
+		    cam.animations = [];
+            
+            var a = new BABYLON.Animation(
+                "a",
+                "position.y", 20,
+                BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+                BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+            
+                // Animation keys
+                var keys = [];
+                keys.push({ frame: 0, value: cam.position.y });
+                keys.push({ frame: 10, value: cam.position.y + 10 });
+                keys.push({ frame: 20, value: cam.position.y });
+                a.setKeys(keys);
+                
+                var easingFunction = new BABYLON.CircleEase();
+                easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
+                a.setEasingFunction(easingFunction);
+                
+                cam.animations.push(a);
+                
+                scene.beginAnimation(cam, 0, 20, false);
+            } 
+            
+            // Game/Render loop
+
+            scene.onBeforeRenderObservable.add(()=>{
+                csound.SetChannel("amp", .05+(camera.position.y-2)/15);
             })
 
             return scene;
