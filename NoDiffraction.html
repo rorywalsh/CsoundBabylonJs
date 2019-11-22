@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>Babylon Template</title>
+
+        <style>
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #renderCanvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+        </style>
+        <script src="js/babylon.js"></script>
+        <script src="js/babylonjs.loaders.min.js"></script>
+        <script src="js/pep.js"></script>
+    </head>
+   <body>
+
+    <canvas id="renderCanvas" touch-action="none"></canvas> //touch-action="none" for best results from PEP
+    <script src="csound/csound.js"></script>
+    <script>
+        // load sound engine and compiles script
+        var csoundLoaded = false;
+        function moduleDidLoad() {
+            csound.CopyUrlToLocal("audio/pianoMood.wav", "pianoMood.wav", function(){console.log("Loading...");});
+            csound.PlayCsd("Diffraction.csd");
+            csound.SetChannel(22050, "cutoff");
+            csoundLoaded = true;
+            
+            setTimeout(function(){ createGame() }, 2000);
+        }
+
+//wrap game code so that is doesn't load until everything else has. 
+var createGame = function()
+{
+        var canvas = document.getElementById("renderCanvas"); // Get the canvas element 
+        var engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+
+        /*********** this function is the only one you need to modify *************/
+        var createScene = function () 
+        {
+            
+            var scene = new BABYLON.Scene(engine);
+
+            // Lights
+            var light0 = new BABYLON.DirectionalLight("Omni", new BABYLON.Vector3(-2, -5, 2), scene);
+
+            // Need a free camera for collisions
+            var camera = new BABYLON.FreeCamera("FreeCamera", new BABYLON.Vector3(10, 2, -80), scene);
+            camera.attachControl(canvas, true);
+            camera.keysUp.push(87);    //W
+            camera.keysDown.push(83)   //D
+            camera.keysLeft.push(65);  //A
+            camera.keysRight.push(68); //S            camera.speed = 1;
+            //Ground
+            var ground = BABYLON.Mesh.CreatePlane("ground", 1500.0, scene);
+            ground.material = new BABYLON.StandardMaterial("groundMat", scene);
+            ground.material.diffuseColor = new BABYLON.Color3(1, 1, 1);
+            ground.material.backFaceCulling = false;
+            ground.position = new BABYLON.Vector3(0, 0, 0);
+            ground.rotation = new BABYLON.Vector3(Math.PI / 2, 0, 0);
+
+            scene.onPointerObservable.add((pointerInfo) => {
+                switch (pointerInfo.type) {
+                    case BABYLON.PointerEventTypes.POINTERDOWN:
+                        CSOUND_AUDIO_CONTEXT.resume();
+                        console.log("POINTER DOWN");
+                        break;
+                }
+            });
+            
+            //Simple box
+            var source = new BABYLON.Mesh.CreateBox("Source", 2, scene);
+            source.position = new BABYLON.Vector3(0, 1, 0);
+            csound.ReadScore('i"PLAY_SOUND" 0 -1 "pianoMood.wav" '+'"'+source.name+'"');  
+            csound.SetChannel(source.name, 22050);
+            // Barrier. Longest dimension is 5m. If speed of sound in the world is 344 ms, then
+            // such a barrier, when placed between the source and the listener should filter out sounds
+            // above 344/5=68.8Hz
+            var barrier = new BABYLON.MeshBuilder.CreateBox("Barrier", {height: 5, width: 5, depth: 0.5}, scene);
+            barrier.position = new BABYLON.Vector3(-2, 1, -40);
+            
+
+            //Set gravity for the scene (G force like, on Y-axis)
+            scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
+
+            // Enable Collisions
+            scene.collisionsEnabled = true;
+
+            //Then apply collisions and gravity to the active camera
+            camera.checkCollisions = true;
+            camera.applyGravity = true;
+
+            //Set the ellipsoid around the camera (e.g. your player's size)
+            camera.ellipsoid = new BABYLON.Vector3(1, 1, 1);
+
+            //finally, say which mesh will be collisionable
+            ground.checkCollisions = true;
+
+            // Keyboard events
+            var inputMap ={};
+            scene.actionManager = new BABYLON.ActionManager(scene);
+            scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {								
+                inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+            }));
+            scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {								
+                inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+            }));
+
+            
+            var cutoff = 344 / 5;
+            // Game/Render loop
+            scene.onBeforeRenderObservable.add(()=>{
+                //console.log(BABYLON.Vector3.GetAngleBetweenVectors(camera.position, )            
+                var ray = BABYLON.Ray.CreateNewFromTo(camera.position, source.position);
+                BABYLON.RayHelper.CreateAndShow(ray, scene, new BABYLON.Color3(1, 0, 0));
+                var hit = scene.pickWithRay(ray);
+
+                // if (hit.pickedMesh.id == 'Barrier'){
+                //     csound.SetChannel(source.name, cutoff);
+                // }
+                // else
+                //     csound.SetChannel(source.name, 22050);
+            })
+
+            return scene;
+        }
+        /******* End of the create scene function ******/    
+
+
+        var scene = createScene(); //Call the createScene function
+        // Register a render loop to repeatedly render the scene
+        engine.runRenderLoop(function () { 
+                scene.render();
+        });
+
+        // Watch for browser/canvas resize events
+        window.addEventListener("resize", function () { 
+                engine.resize();
+        });
+}
+    </script>
+
+   </body>
+
+</html> 
