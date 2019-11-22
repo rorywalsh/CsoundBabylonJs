@@ -104,10 +104,7 @@
                                 });
                                 set.start();
                             });
-                            if (getAudioContext().state !== 'running') {
-                                console.log(getAudioContext().state)
-                                getAudioContext().resume();
-                            }
+                            CSOUND_AUDIO_CONTEXT.resume();
                             csound.ReadScore("i1 0 5");
                         }
                 }
