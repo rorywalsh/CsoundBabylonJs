@@ -72,6 +72,14 @@ var createGame = function()
             box1.position = new BABYLON.Vector3(20, -9, -10);
             csound.ReadScore('i1 0 -1 0 "'+box1.name+'"');
 
+            scene.onPointerObservable.add((pointerInfo) => {
+                switch (pointerInfo.type) {
+                    case BABYLON.PointerEventTypes.POINTERDOWN:
+                        CSOUND_AUDIO_CONTEXT.resume();
+                        console.log("POINTER DOWN");
+                        break;
+                }
+            });
 
             //Set gravity for the scene (G force like, on Y-axis)
             scene.gravity = new BABYLON.Vector3(0, -0.9, 0);
@@ -108,16 +116,16 @@ var createGame = function()
             // Game/Render loop
             scene.onBeforeRenderObservable.add(()=>{
                 if(inputMap["w"] || inputMap["ArrowUp"]){
-                    //console.log("ArrowUp");
+//                      CSOUND_AUDIO_CONTEXT.resume();
                 } 
                 if(inputMap["a"] || inputMap["ArrowLeft"]){
-                    //console.log("ArrowLeft");
+//                      CSOUND_AUDIO_CONTEXT.resume();
                 } 
                 if(inputMap["s"] || inputMap["ArrowDown"]){
-                   // console.log("ArrowDown");
+//                     CSOUND_AUDIO_CONTEXT.resume();
                 } 
                 if(inputMap["d"] || inputMap["ArrowRight"]){
-                    //console.log("ArrowRight");
+//                      CSOUND_AUDIO_CONTEXT.resume();
                 }  
                 
                 //sets the distance from the camera to the first object passed to it

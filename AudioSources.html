@@ -36,9 +36,9 @@ var audioEngine;
 function moduleDidLoad() {          
     audioEngine = new AudioEngine("audioEngine.csd");
     audioEngine.setAudioDirectory("/audio");
-    audioEngine.addFiles(new Array('pianoMood.wav')); 
+    csound.CopyUrlToLocal("audio/pianoMood.wav", "pianoMood.wav", function(){console.log("Loading...");});
     audioEngine.start();
-    setTimeout(function(){ createGame() }, 2000);
+    setTimeout(function(){ createGame() }, 3000);
 }
 
 //wrap game code so that is doesn't load until everything else has. 
@@ -62,6 +62,15 @@ var createGame = function()
         camera.keysRight.push(68); //S
         camera.speed = 1;
 
+        scene.onPointerObservable.add((pointerInfo) => {
+                switch (pointerInfo.type) {
+                    case BABYLON.PointerEventTypes.POINTERDOWN:
+                        CSOUND_AUDIO_CONTEXT.resume();
+                        console.log("POINTER DOWN");
+                        break;
+                }
+            });
+        
         //Ground
         var ground = BABYLON.Mesh.CreatePlane("ground", 1000.0, scene);
         ground.material = new BABYLON.StandardMaterial("groundMat", scene);

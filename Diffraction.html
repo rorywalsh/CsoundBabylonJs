@@ -36,6 +36,7 @@
             csound.PlayCsd("Diffraction.csd");
             csound.SetChannel(22050, "cutoff");
             csoundLoaded = true;
+            
             setTimeout(function(){ createGame() }, 2000);
         }
 
@@ -69,7 +70,15 @@ var createGame = function()
             ground.position = new BABYLON.Vector3(0, 0, 0);
             ground.rotation = new BABYLON.Vector3(Math.PI / 2, 0, 0);
 
-
+            scene.onPointerObservable.add((pointerInfo) => {
+                switch (pointerInfo.type) {
+                    case BABYLON.PointerEventTypes.POINTERDOWN:
+                        CSOUND_AUDIO_CONTEXT.resume();
+                        console.log("POINTER DOWN");
+                        break;
+                }
+            });
+            
             //Simple box
             var source = new BABYLON.Mesh.CreateBox("Source", 2, scene);
             source.position = new BABYLON.Vector3(0, 1, 0);

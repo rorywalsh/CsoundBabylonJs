@@ -104,7 +104,9 @@
                                 });
                                 set.start();
                             });
+                            CSOUND_AUDIO_CONTEXT.resume();
                             csound.ReadScore("i1 .5 5");
+                            
                         }
                 }
             });
