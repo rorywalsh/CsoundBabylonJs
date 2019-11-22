@@ -36,6 +36,7 @@
             csound.PlayCsd("Diffraction.csd");
             csound.SetChannel(22050, "cutoff");
             csoundLoaded = true;
+            CSOUND_AUDIO_CONTEXT.resume();
             setTimeout(function(){ createGame() }, 2000);
         }
 
