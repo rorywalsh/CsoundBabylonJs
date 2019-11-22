@@ -36,7 +36,7 @@ var audioEngine;
 function moduleDidLoad() {          
     audioEngine = new AudioEngine("audioEngine.csd");
     audioEngine.setAudioDirectory("/audio");
-    audioEngine.addFiles(new Array('pianoMood.wav')); 
+    csound.CopyUrlToLocal("audio/pianoMood.wav", "pianoMood.wav", function(){console.log("Loading...");});
     audioEngine.start();
     setTimeout(function(){ createGame() }, 2000);
 }
