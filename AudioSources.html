@@ -38,7 +38,7 @@ function moduleDidLoad() {
     audioEngine.setAudioDirectory("/audio");
     csound.CopyUrlToLocal("audio/pianoMood.wav", "pianoMood.wav", function(){console.log("Loading...");});
     audioEngine.start();
-    setTimeout(function(){ createGame() }, 2000);
+    setTimeout(function(){ createGame() }, 3000);
 }
 
 //wrap game code so that is doesn't load until everything else has. 
