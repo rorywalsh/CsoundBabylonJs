@@ -11,7 +11,7 @@ instr PLAY_SOUND
 
     SChannel strcpy p5
     kCutOff chnget SChannel
-    kCutOff = portk(kCutOff, 1)
+    kCutOff = portk(kCutOff, 2)
 
     p3 = iLength
     if iChannels == 2 then
