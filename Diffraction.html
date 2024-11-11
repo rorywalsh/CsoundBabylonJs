@@ -61,7 +61,8 @@ var createGame = function()
             camera.keysUp.push(87);    //W
             camera.keysDown.push(83)   //D
             camera.keysLeft.push(65);  //A
-            camera.keysRight.push(68); //S            camera.speed = 1;
+            camera.keysRight.push(68); //S            
+            camera.speed = 0.5;
             //Ground
             var ground = BABYLON.Mesh.CreatePlane("ground", 1500.0, scene);
             ground.material = new BABYLON.StandardMaterial("groundMat", scene);
