@@ -11,7 +11,7 @@ instr PLAY_SOUND
     SChannel strcpy p5
     kCutOff = tonek(chnget:k(SChannel), 10)
     print chnget:i(SChannel)
-    ;printk2 kCutOff
+    printk2 kCutOff
 
     p3 = iLength
     if iChannels == 2 then
