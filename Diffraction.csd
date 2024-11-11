@@ -9,7 +9,7 @@ instr PLAY_SOUND
     iChannels = filenchnls(SFilename)
 
     SChannel strcpy p5
-    kCutOff = tonek(chnget:k(SChannel), 10)
+    kCutOff = tonek(chnget:k(SChannel), 5)
     print chnget:i(SChannel)
     printk2 kCutOff
 
