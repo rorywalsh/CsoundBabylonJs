@@ -4,7 +4,7 @@
 nchnls = 2
 
 instr PLAY_SOUND
-
+    prints "Starting playback"
     SFilename strcpy p4
     iLength = filelen(SFilename)
     iChannels = filenchnls(SFilename)
